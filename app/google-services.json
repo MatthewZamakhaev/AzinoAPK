@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "535385932190",
+    "project_id": "azino-def1b",
+    "storage_bucket": "azino-def1b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:535385932190:android:873b36699940c09ba8968f",
+        "android_client_info": {
+          "package_name": "coa.appa.azino777"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrjVLdnGLZ-wtY6mIzmrGQLorUJ6L5NBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
