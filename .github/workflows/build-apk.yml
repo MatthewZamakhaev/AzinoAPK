@@ -16,38 +16,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: 🛠️ Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: 📦 Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Set up Android SDK
+      - name: 🏗️ Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install dependencies
+      - name: 📥 Install dependencies
         run: |
           ./gradlew dependencies || echo "Warning: Dependencies not fully resolved"
 
-      - name: Generate config.json
+      - name: 🔧 Generate config.json
         run: |
           mkdir -p app/src/main/assets/
           echo '{"campaign": "${{ github.event.inputs.campaign }}"}' > app/src/main/assets/config.json
           cat app/src/main/assets/config.json
 
-      - name: Give execute permission to gradlew
+      - name: 🛠️ Grant execute permission to gradlew
         run: chmod +x gradlew
 
-      - name: Clean project
+      - name: 🧹 Clean project
         run: ./gradlew clean
 
-      - name: Build APK
+      - name: 🔨 Build APK
         run: ./gradlew assembleDebug
 
-      - name: Upload APK to external storage
+      - name: 🔑 Setup SSH key
         run: |
-          mkdir -p /tmp/apk_builds/
-          cp app/build/outputs/apk/debug/app-debug.apk /tmp/apk_builds/${{ github.event.inputs.user_id }}.apk
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan serverapk11.fun >> ~/.ssh/known_hosts
+
+      - name: 📤 Upload APK to server
+        run: |
+          echo "Uploading APK to server..."
+          scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \
+            app/build/outputs/apk/debug/app-debug.apk \
+            root@serverapk11.fun:/tmp/apk_builds/${{ github.event.inputs.user_id }}.apk
