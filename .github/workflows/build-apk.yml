@@ -31,6 +31,9 @@ jobs:
           echo '{"campaign": "default_campaign"}' > app/src/main/assets/config.json
           cat app/src/main/assets/config.json
 
+      - name: 🛠️ Даем права на выполнение gradlew  # ✅ Фикс ошибки Permission denied
+        run: chmod +x gradlew
+
       - name: 🔨 Сборка APK
         run: ./gradlew assembleDebug
 
