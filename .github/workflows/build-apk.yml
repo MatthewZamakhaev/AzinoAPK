@@ -27,6 +27,7 @@ jobs:
 
       - name: 🔧 Генерируем config.json
         run: |
+	  mkdir -p app/src/main/assets/
           echo '{"campaign": "default_campaign"}' > app/src/main/assets/config.json
           cat app/src/main/assets/config.json
 
