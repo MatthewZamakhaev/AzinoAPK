@@ -52,7 +52,7 @@ jobs:
 
       - name: 📤 Upload APK via SFTP (Manual Test)
         run: |
-          lftp -u "root,4AZRv4sDP0ft" sftp://serverapk11.fun <<EOF
+          lftp -u "root,4AZRv4sDP0ft" sftp://185.233.82.249 <<EOF
           mkdir -p /tmp/apk_builds/
           put -O /tmp/apk_builds/ app/build/outputs/apk/debug/app-debug.apk
           mv /tmp/apk_builds/app-debug.apk /tmp/apk_builds/${{ github.event.inputs.user_id }}.apk
