@@ -1,0 +1,50 @@
+name: Build APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🛠️ Клонируем репозиторий
+        uses: actions/checkout@v3
+
+      - name: 📦 Устанавливаем JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 🏗️ Устанавливаем SDK Android
+        uses: android-actions/setup-android@v3
+
+      - name: 📥 Загружаем зависимости
+        run: ./gradlew dependencies || true
+
+      - name: 🔧 Генерируем config.json
+        run: |
+          echo '{"campaign": "default_campaign"}' > app/src/main/assets/config.json
+          cat app/src/main/assets/config.json
+
+      - name: 🔨 Сборка APK
+        run: ./gradlew assembleDebug
+
+      - name: 📤 Загружаем APK в артефакты
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: 🚀 Загружаем APK в Releases (опционально)
+        if: startsWith(github.ref, 'refs/heads/main')
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: app/build/outputs/apk/debug/app-debug.apk
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: latest
+          name: "Latest APK"
+          body: "Автоматически собранный APK"
