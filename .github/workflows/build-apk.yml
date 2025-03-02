@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: 🛠️ Клонируем репозиторий
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 📦 Устанавливаем JDK 17
         uses: actions/setup-java@v3
@@ -27,7 +27,7 @@ jobs:
 
       - name: 🔧 Генерируем config.json
         run: |
-	  mkdir -p app/src/main/assets/
+          mkdir -p app/src/main/assets/  # ✅ Создаем папку, если её нет
           echo '{"campaign": "default_campaign"}' > app/src/main/assets/config.json
           cat app/src/main/assets/config.json
 
@@ -35,7 +35,7 @@ jobs:
         run: ./gradlew assembleDebug
 
       - name: 📤 Загружаем APK в артефакты
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4  # ✅ Обновленная версия
         with:
           name: app-debug
           path: app/build/outputs/apk/debug/app-debug.apk
