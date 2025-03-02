@@ -1,9 +1,12 @@
 name: Build APK
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      campaign:
+        description: "Campaign name"
+        required: true
+        default: "default_campaign"
 
 jobs:
   build:
@@ -27,28 +30,18 @@ jobs:
 
       - name: 🔧 Генерируем config.json
         run: |
-          mkdir -p app/src/main/assets/  # ✅ Создаем папку, если её нет
-          echo '{"campaign": "default_campaign"}' > app/src/main/assets/config.json
+          mkdir -p app/src/main/assets/
+          echo '{"campaign": "${{ github.event.inputs.campaign }}"}' > app/src/main/assets/config.json
           cat app/src/main/assets/config.json
 
-      - name: 🛠️ Даем права на выполнение gradlew  # ✅ Фикс ошибки Permission denied
+      - name: 🛠️ Даем права на выполнение gradlew
         run: chmod +x gradlew
 
       - name: 🔨 Сборка APK
         run: ./gradlew assembleDebug
 
       - name: 📤 Загружаем APK в артефакты
-        uses: actions/upload-artifact@v4  # ✅ Обновленная версия
+        uses: actions/upload-artifact@v4
         with:
-          name: app-debug
+          name: app-${{ github.event.inputs.campaign }}
           path: app/build/outputs/apk/debug/app-debug.apk
-
-      - name: 🚀 Загружаем APK в Releases (опционально)
-        if: startsWith(github.ref, 'refs/heads/main')
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: app/build/outputs/apk/debug/app-debug.apk
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: latest
-          name: "Latest APK"
-          body: "Автоматически собранный APK"
