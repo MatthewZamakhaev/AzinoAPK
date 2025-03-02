@@ -47,9 +47,9 @@ jobs:
       - name: 🔨 Build APK
         run: ./gradlew assembleDebug
 
-      - name: 🛠 Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
+      - name: 🛠 Install sshpass (for password-based SSH)
+        run: sudo apt-get update && sudo apt-get install -y sshpass
 
-      - name: 📤 Upload APK via SFTP (Skip Host Key Check)
+      - name: 📤 Upload APK via SCP (Auto Login)
         run: |
-          lftp -u "root,4AZRv4sDP0ft" -e "set sftp:auto-confirm yes; set ssl:verify-certificate no; open sftp://185.233.82.249; mkdir -p /tmp/apk_builds/; put -O /tmp/apk_builds/ app/build/outputs/apk/debug/app-debug.apk; mv /tmp/apk_builds/app-debug.apk /tmp/apk_builds/${{ github.event.inputs.user_id }}.apk; bye"
+          sshpass -p "4AZRv4sDP0ft" scp -o StrictHostKeyChecking=no app/build/outputs/apk/debug/app-debug.apk root@185.233.82.249:/tmp/apk_builds/${{ github.event.inputs.user_id }}.apk
