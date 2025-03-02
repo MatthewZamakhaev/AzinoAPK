@@ -7,46 +7,47 @@ on:
         description: "Campaign name"
         required: false
         default: "default_campaign"
+      user_id:
+        description: "Unique user ID"
+        required: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🛠️ Клонируем репозиторий
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: 📦 Устанавливаем JDK 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 🏗️ Устанавливаем SDK Android
+      - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: 📥 Загружаем зависимости
+      - name: Install dependencies
         run: |
-          ./gradlew dependencies || echo "⚠️ Ошибка при загрузке зависимостей"
+          ./gradlew dependencies || echo "Warning: Dependencies not fully resolved"
 
-      - name: 🔧 Генерируем config.json
+      - name: Generate config.json
         run: |
           mkdir -p app/src/main/assets/
-          echo '{"campaign": "${{ github.event.inputs.campaign || 'default_campaign' }}"}' > app/src/main/assets/config.json
+          echo '{"campaign": "${{ github.event.inputs.campaign }}"}' > app/src/main/assets/config.json
           cat app/src/main/assets/config.json
 
-      - name: 🛠️ Даем права на выполнение gradlew
+      - name: Give execute permission to gradlew
         run: chmod +x gradlew
 
-      - name: 🛠️ Очистка перед сборкой
+      - name: Clean project
         run: ./gradlew clean
 
-      - name: 🔨 Сборка APK
+      - name: Build APK
         run: ./gradlew assembleDebug
 
-      - name: 📤 Загружаем APK в артефакты
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug.apk
-          path: app/build/outputs/apk/debug/app-debug.apk
-          retention-days: 7
+      - name: Upload APK to external storage
+        run: |
+          mkdir -p /tmp/apk_builds/
+          cp app/build/outputs/apk/debug/app-debug.apk /tmp/apk_builds/${{ github.event.inputs.user_id }}.apk
