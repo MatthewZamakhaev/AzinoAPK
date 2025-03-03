@@ -93,6 +93,27 @@ class MyApp : Application() {
         appsflyer.start(this)
 
         campaign = getCampaignFromAssets(this)
+        manuallySendInstallToAppsFlyer(campaign!!)
         Log.d("MyApp", "Кампания загружена: $campaign")
+    }
+
+    private fun manuallySendInstallToAppsFlyer(campaign: String) {
+        val installData: MutableMap<String, Any?> = HashMap()
+        installData["pid"] = "apk_install" // Указываем источник установки
+        installData["c"] = campaign // Кампания
+        installData["af_channel"] = "direct_apk" // Канал установки
+        installData["af_status"] = "Non-organic" // Отмечаем как рекламную установку
+
+        // Устанавливаем AppsFlyer UID
+        val afUid = AppsFlyerLib.getInstance().getAppsFlyerUID(this)
+        installData["af_install_id"] = afUid
+
+        // Указываем, что APK установлен вне стора
+        AppsFlyerLib.getInstance().setOutOfStore("Azino")
+
+        // Логируем установку
+        AppsFlyerLib.getInstance().logEvent(this, "af_first_open", installData)
+
+        Log.d("AppsFlyer", "Ручная установка отправлена с кампанией: $campaign")
     }
 }

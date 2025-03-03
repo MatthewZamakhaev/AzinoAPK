@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d("MainActivity", "Кампания не найдена");
         }
-        manuallySendInstallToAppsFlyer(campaign);
 
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
         OneSignal.initWithContext(this);
@@ -216,31 +215,4 @@ public class MainActivity extends AppCompatActivity {
             uploadMessage = null;
         }
     }
-
-    public void manuallySendInstallToAppsFlyer(String campaign) {
-        Map<String, Object> installData = new HashMap<>();
-        installData.put("pid", "test");  // Источник установки (замени test)
-        installData.put("c", campaign); // Кампания из config.json
-        installData.put("af_channel", "direct_apk"); // Указываем канал установки
-        installData.put("af_status", "Non-organic"); // Указываем, что это рекламная установка
-
-        // Получаем уникальный ID AppsFlyer
-        String afUid = AppsFlyerLib.getInstance().getAppsFlyerUID(this);
-        installData.put("af_install_id", afUid);
-
-        // Если есть GAID, добавляем
-        if (gaid != null && !gaid.isEmpty()) {
-            installData.put("advertising_id", gaid);
-        }
-
-        // Устанавливаем доп. данные
-        AppsFlyerLib.getInstance().setAdditionalData(installData);
-
-        // Логируем установку в AppsFlyer
-        AppsFlyerLib.getInstance().logEvent(this, "af_first_open", installData);
-
-        Log.d("AppsFlyer", "Ручная установка отправлена с кампанией: " + campaign);
-    }
-
-
 }
