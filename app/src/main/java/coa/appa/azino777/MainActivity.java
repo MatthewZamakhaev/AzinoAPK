@@ -25,6 +25,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.appsflyer.AppsFlyerLib;
 import com.onesignal.OneSignal;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
     WebView magicview;
     WebSettings settingparam;
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d("MainActivity", "Кампания не найдена");
         }
+        manuallySendInstallToAppsFlyer(campaign);
 
         OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE);
         OneSignal.initWithContext(this);
@@ -211,5 +215,24 @@ public class MainActivity extends AppCompatActivity {
             uploadMessage.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(resultCode, intent));
             uploadMessage = null;
         }
+    }
+
+    public void manuallySendInstallToAppsFlyer(String campaign) {
+        Map<String, Object> installData = new HashMap<>();
+        installData.put("pid", "manual_source");  // Источник установки
+        installData.put("c", campaign); // Кампания
+        installData.put("af_channel", "direct_apk"); // Канал установки
+        installData.put("af_status", "Non-organic"); // Помечаем как платную установку
+
+        // Устанавливаем дополнительные данные для атрибуции
+        AppsFlyerLib.getInstance().setAdditionalData(installData);
+
+        // Форсируем "ручную установку"
+        AppsFlyerLib.getInstance().logEvent(this, "af_install", installData);
+
+        // Сообщаем AppsFlyer о первой установке вручную
+        AppsFlyerLib.getInstance().start(this);
+
+        Log.d("AppsFlyer", "Ручная установка отправлена с кампанией: " + campaign);
     }
 }
