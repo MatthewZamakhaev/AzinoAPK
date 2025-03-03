@@ -219,20 +219,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void manuallySendInstallToAppsFlyer(String campaign) {
         Map<String, Object> installData = new HashMap<>();
-        installData.put("pid", "manual_source");  // Источник установки
+        installData.put("pid", "test");  // Источник установки
         installData.put("c", campaign); // Кампания
         installData.put("af_channel", "direct_apk"); // Канал установки
-        installData.put("af_status", "Non-organic"); // Помечаем как платную установку
+        installData.put("af_status", "Non-organic"); // Отмечаем как рекламную установку
 
-        // Устанавливаем дополнительные данные для атрибуции
+        // Устанавливаем дополнительные данные
         AppsFlyerLib.getInstance().setAdditionalData(installData);
 
-        // Форсируем "ручную установку"
-        AppsFlyerLib.getInstance().logEvent(this, "af_install", installData);
-
-        // Сообщаем AppsFlyer о первой установке вручную
-        AppsFlyerLib.getInstance().start(this);
+        // Отправляем событие установки
+        AppsFlyerLib.getInstance().logEvent(this, "af_manual_install", installData);
 
         Log.d("AppsFlyer", "Ручная установка отправлена с кампанией: " + campaign);
     }
+
 }
