@@ -73,8 +73,8 @@ class MyApp : Application() {
         appsflyer.setOutOfStore("Azino")
 
         val installReferrer = HashMap<String, Any>()
-        installReferrer["referrer"] = "utm_source=test&utm_medium=apk"
-        appsflyer.setAdditionalData(installReferrer)
+        installReferrer["referrer"] = "utm_source=test&utm_medium=apk&utm_campaign=Azino"
+        installReferrer["af_status"] = "Non-organic"
 
         val conversionListener = object : AppsFlyerConversionListener {
             override fun onConversionDataSuccess(conversionDataMap: MutableMap<String, Any>) {

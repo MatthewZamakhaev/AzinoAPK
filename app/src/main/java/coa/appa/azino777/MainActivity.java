@@ -237,13 +237,9 @@ public class MainActivity extends AppCompatActivity {
         if (gaid != null && !gaid.isEmpty()) {
             installData.put("advertising_id", gaid);
         }
-
+        installData.put("install_referrer", "utm_source=direct_apk&utm_medium=apk&utm_campaign=" + campaign);
         appsFlyer.setAdditionalData(installData);
-
-        // 📌 **Имитация установки**
         appsFlyer.start(this);
-
-        // 📌 **Передаем установку как ручное событие**
         appsFlyer.logEvent(this, "af_first_open", installData);
 
         // 📌 **Логируем, чтобы проверить данные**
