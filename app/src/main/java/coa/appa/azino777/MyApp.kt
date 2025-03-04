@@ -72,6 +72,10 @@ class MyApp : Application() {
         appsflyer.setMinTimeBetweenSessions(0)
         appsflyer.setOutOfStore("Azino")
 
+        val installReferrer = HashMap<String, Any>()
+        installReferrer["referrer"] = "utm_source=test&utm_medium=apk"
+        appsflyer.setAdditionalData(installReferrer)
+
         val conversionListener = object : AppsFlyerConversionListener {
             override fun onConversionDataSuccess(conversionDataMap: MutableMap<String, Any>) {
                 Log.d("AppsFlyer", "Conversion Data: $conversionDataMap")
